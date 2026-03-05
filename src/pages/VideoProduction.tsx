@@ -88,130 +88,185 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
           </div>
         </motion.div>
       </div>
-      
-      <div className="relative cursor-none group/carousel">
-        {/* Custom Cursor Hint */}
-        <motion.div 
-          className="fixed w-24 h-24 rounded-full border border-brand-lime/50 bg-brand-lime/5 backdrop-blur-sm z-[100] pointer-events-none items-center justify-center hidden group-hover/carousel:flex"
-          style={{ 
-            left: "var(--cursor-x)", 
-            top: "var(--cursor-y)",
-            transform: "translate(-50%, -50%)"
-          }}
-          onMouseMove={(e) => {
-            const target = e.currentTarget as HTMLElement;
-            target.style.setProperty('--cursor-x', `${e.clientX}px`);
-            target.style.setProperty('--cursor-y', `${e.clientY}px`);
-          }}
-        >
-          <span className="text-brand-lime text-[10px] font-black uppercase tracking-widest">Drag</span>
-        </motion.div>
 
-        <motion.div 
-          drag="x"
-          dragConstraints={{ right: 0, left: -((videos.length * 0.7 * window.innerWidth) - window.innerWidth + 100) }}
-          onDrag={(e, info) => setDragX(info.point.x)}
-          className="flex gap-16 px-6"
-          style={{ width: "max-content" }}
-        >
-          {videos.map((video, idx) => (
-            <motion.div 
-              key={video.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, delay: idx * 0.1 }}
-              className="relative w-[80vw] md:w-[60vw] group"
-            >
-              {/* Artistic Frame */}
-              <div className="relative aspect-video rounded-[4rem] overflow-hidden bg-black shadow-[0_50px_100px_-20px_rgba(0,0,0,0.7)] transition-all duration-1000 group-hover:shadow-brand-lime/20">
-                
-                {/* Parallax Video Container */}
-                <motion.div 
-                  className="absolute inset-0 w-full h-full"
-                  style={{ x: dragX * 0.05 }}
-                >
-                  <iframe
-                    src={`${video.url}?autoplay=0&muted=1&background=1`}
-                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.8] group-hover:grayscale-0 transition-all duration-1000 scale-110 group-hover:scale-100"
-                    allow="autoplay; fullscreen"
+        <div className="relative w-full overflow-hidden py-20 group/carousel">
+
+      {/* Cursor */}
+      <motion.div
+        className="fixed w-20 h-20 rounded-full border border-brand-lime/50 
+        bg-brand-lime/10 backdrop-blur-md z-50 pointer-events-none
+        items-center justify-center hidden group-hover/carousel:flex"
+        style={{
+          left: "var(--cursor-x)",
+          top: "var(--cursor-y)",
+          transform: "translate(-50%, -50%)"
+        }}
+      >
+        <span className="text-brand-lime text-xs font-bold tracking-widest uppercase">
+          Drag
+        </span>
+      </motion.div>
+
+      {/* Carousel container */}
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: -1000, right: 0 }}
+        onDrag={(e, info) => setDragX(info.point.x)}
+        className="flex gap-10 px-6 md:px-16 cursor-grab active:cursor-grabbing"
+      >
+        {videos.map((video, idx) => (
+          <motion.div
+            key={video.id}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: idx * 0.1 }}
+            className="
+            relative 
+            w-[90vw] 
+            sm:w-[70vw] 
+            lg:w-[55vw] 
+            xl:w-[45vw]
+            flex-shrink-0
+            "
+          >
+            {/* Frame */}
+            <div className="
+            relative 
+            w-full 
+            aspect-video
+            rounded-[2rem]
+            overflow-hidden
+            bg-black
+            shadow-2xl
+            group
+            ">
+
+              {/* Video */}
+              <motion.div
+                style={{ x: dragX * 0.03 }}
+                className="absolute inset-0"
+              >
+                <iframe
+                  src={`${video.url}?autoplay=0&muted=1`}
+                  className="
+                  w-full 
+                  h-full 
+                  object-cover
+                  transition-all
+                  duration-700
+                  grayscale-[0.7]
+                  group-hover:grayscale-0
+                  "
+                  allow="autoplay; fullscreen"
+                />
+              </motion.div>
+
+              {/* Overlay gradient */}
+              <div className="
+              absolute inset-0 
+              bg-gradient-to-t 
+              from-black/70 
+              via-black/20 
+              to-transparent
+              " />
+
+              {/* Play button */}
+              <div className="
+              absolute inset-0
+              flex items-center justify-center
+              pointer-events-none
+              ">
+                <div className="
+                w-16 h-16
+                rounded-full
+                flex items-center justify-center
+                bg-white/10
+                backdrop-blur
+                border border-white/20
+                transition
+                group-hover:scale-110
+                group-hover:bg-brand-lime
+                ">
+                  <Play
+                    size={26}
+                    className="
+                    text-white
+                    group-hover:text-black
+                    ml-1
+                    fill-current
+                    "
                   />
-                </motion.div>
-
-                {/* Film Grain Overlay */}
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-grain" />
-                
-                {/* Gradient Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-transparent to-black/40 group-hover:opacity-30 transition-opacity duration-1000" />
-                <div className="absolute inset-0 border-[20px] border-black/10 pointer-events-none" />
-
-                {/* Play Button - Minimalist & Artistic */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative">
-                    <motion.div 
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                      className="absolute -inset-8 border border-brand-lime/20 rounded-full"
-                    />
-                    <div className="w-20 h-20 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 flex items-center justify-center group-hover:bg-brand-lime group-hover:border-brand-lime transition-all duration-700 group-hover:scale-125">
-                      <Play className="text-white group-hover:text-black fill-current ml-1.5 transition-colors" size={28} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Editorial Info Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-12 md:p-20">
-                  <div className="overflow-hidden mb-6">
-                    <motion.div
-                      initial={{ y: "100%" }}
-                      whileInView={{ y: 0 }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
-                      className="flex items-center gap-4"
-                    >
-                      <span className="text-brand-lime text-xs font-black uppercase tracking-[0.4em]">
-                        {video.category || "Cinematography"}
-                      </span>
-                      <div className="h-px w-24 bg-brand-lime/30" />
-                    </motion.div>
-                  </div>
-                  
-                  <div className="overflow-hidden">
-                    <motion.h4 
-                      initial={{ y: "100%" }}
-                      whileInView={{ y: 0 }}
-                      transition={{ duration: 0.8, delay: 0.3 }}
-                      className="text-5xl md:text-7xl font-bold text-white tracking-tighter leading-none mb-6 group-hover:text-brand-lime transition-colors duration-700"
-                    >
-                      {video.title}
-                    </motion.h4>
-                  </div>
-
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                    className="flex items-center gap-12"
-                  >
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Production</span>
-                      <span className="text-xs text-white/60 font-bold">V-DIGITAL CONCEPT</span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-white/30 uppercase tracking-widest mb-1">Year</span>
-                      <span className="text-xs text-white/60 font-bold">2024</span>
-                    </div>
-                  </motion.div>
                 </div>
               </div>
 
-              {/* Decorative Artistic Elements */}
-              <div className="absolute -top-10 -left-10 text-[12rem] font-black text-white/[0.02] pointer-events-none">
-                0{idx + 1}
+              {/* Info */}
+              <div className="
+              absolute bottom-0 left-0 right-0
+              p-6 md:p-10
+              ">
+                <span className="
+                text-brand-lime
+                text-xs
+                font-bold
+                tracking-[0.3em]
+                uppercase
+                ">
+                  {video.category || "Cinematography"}
+                </span>
+
+                <h4 className="
+                text-white
+                font-bold
+                text-2xl
+                md:text-4xl
+                lg:text-5xl
+                mt-3
+                leading-tight
+                group-hover:text-brand-lime
+                transition-colors
+                ">
+                  {video.title}
+                </h4>
+
+                <div className="flex gap-8 mt-4 text-xs text-white/60">
+                  <div>
+                    <span className="block text-white/30 uppercase tracking-widest">
+                      Production
+                    </span>
+                    <span className="font-semibold">
+                      V-DIGITAL
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="block text-white/30 uppercase tracking-widest">
+                      Year
+                    </span>
+                    <span className="font-semibold">
+                      2024
+                    </span>
+                  </div>
+                </div>
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
+
+            </div>
+
+            {/* index decoration */}
+            <div className="
+            absolute -top-6 -left-6
+            text-[8rem]
+            font-black
+            text-white/[0.03]
+            pointer-events-none
+            ">
+              0{idx + 1}
+            </div>
+
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
     </div>
   );
 };
@@ -306,7 +361,7 @@ const VideoProduction = () => {
         </div>
       </section>
 
-      {/* Carousels */}
+ 
       <div className="max-w-7xl mx-auto">
         {videoCategories.map((category, idx) => (
           <VideoCarousel key={idx} title={category.name} videos={category.videos} />
