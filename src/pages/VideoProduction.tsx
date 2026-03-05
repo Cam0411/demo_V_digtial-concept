@@ -46,7 +46,7 @@ interface VideoCarouselProps {
 
 const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
   const [dragX, setDragX] = useState(0);
-
+const [playingId, setPlayingId] = useState(null);
   return (
     <div className="mb-56 relative">
       {/* Artistic Background Text */}
@@ -89,7 +89,7 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
         </motion.div>
       </div>
 
-        <div className="relative w-full overflow-hidden py-20 group/carousel">
+      <div className="relative w-full overflow-hidden py-20 group/carousel">
 
       {/* Cursor */}
       <motion.div
@@ -107,14 +107,17 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
         </span>
       </motion.div>
 
-      {/* Carousel container */}
+
+      {/* Carousel */}
       <motion.div
         drag="x"
         dragConstraints={{ left: -1000, right: 0 }}
         onDrag={(e, info) => setDragX(info.point.x)}
         className="flex gap-10 px-6 md:px-16 cursor-grab active:cursor-grabbing"
       >
+
         {videos.map((video, idx) => (
+
           <motion.div
             key={video.id}
             initial={{ opacity: 0, y: 40 }}
@@ -130,6 +133,7 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
             flex-shrink-0
             "
           >
+
             {/* Frame */}
             <div className="
             relative 
@@ -142,25 +146,36 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
             group
             ">
 
-              {/* Video */}
+              {/* Video / Thumbnail */}
               <motion.div
                 style={{ x: dragX * 0.03 }}
                 className="absolute inset-0"
               >
-                <iframe
-                  src={`${video.url}?autoplay=0&muted=1`}
-                  className="
-                  w-full 
-                  h-full 
-                  object-cover
-                  transition-all
-                  duration-700
-                  grayscale-[0.7]
-                  group-hover:grayscale-0
-                  "
-                  allow="autoplay; fullscreen"
-                />
+
+                {playingId === video.id ? (
+
+                  <iframe
+                    src={`${video.url}?autoplay=1&muted=0`}
+                    className="w-full h-full"
+                    allow="autoplay; fullscreen"
+                  />
+
+                ) : (
+
+                  <img
+                    src={video.thumbnail}
+                    className="
+                    w-full h-full object-cover
+                    grayscale-[0.7]
+                    group-hover:grayscale-0
+                    transition-all duration-700
+                    "
+                  />
+
+                )}
+
               </motion.div>
+
 
               {/* Overlay gradient */}
               <div className="
@@ -171,40 +186,53 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
               to-transparent
               " />
 
+
               {/* Play button */}
-              <div className="
-              absolute inset-0
-              flex items-center justify-center
-              pointer-events-none
-              ">
+              {playingId !== video.id && (
+
                 <div className="
-                w-16 h-16
-                rounded-full
+                absolute inset-0
                 flex items-center justify-center
-                bg-white/10
-                backdrop-blur
-                border border-white/20
-                transition
-                group-hover:scale-110
-                group-hover:bg-brand-lime
                 ">
-                  <Play
-                    size={26}
+
+                  <button
+                    onClick={() => setPlayingId(video.id)}
                     className="
-                    text-white
-                    group-hover:text-black
-                    ml-1
-                    fill-current
+                    w-16 h-16
+                    rounded-full
+                    flex items-center justify-center
+                    bg-white/10
+                    backdrop-blur
+                    border border-white/20
+                    transition
+                    hover:scale-110
+                    hover:bg-brand-lime
                     "
-                  />
+                  >
+
+                    <Play
+                      size={26}
+                      className="
+                      text-white
+                      hover:text-black
+                      ml-1
+                      fill-current
+                      "
+                    />
+
+                  </button>
+
                 </div>
-              </div>
+
+              )}
+
 
               {/* Info */}
               <div className="
               absolute bottom-0 left-0 right-0
               p-6 md:p-10
               ">
+
                 <span className="
                 text-brand-lime
                 text-xs
@@ -214,6 +242,7 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
                 ">
                   {video.category || "Cinematography"}
                 </span>
+
 
                 <h4 className="
                 text-white
@@ -229,11 +258,14 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
                   {video.title}
                 </h4>
 
+
                 <div className="flex gap-8 mt-4 text-xs text-white/60">
+
                   <div>
                     <span className="block text-white/30 uppercase tracking-widest">
                       Production
                     </span>
+
                     <span className="font-semibold">
                       V-DIGITAL
                     </span>
@@ -243,16 +275,20 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
                     <span className="block text-white/30 uppercase tracking-widest">
                       Year
                     </span>
+
                     <span className="font-semibold">
                       2024
                     </span>
                   </div>
+
                 </div>
+
               </div>
 
             </div>
 
-            {/* index decoration */}
+
+            {/* Index decoration */}
             <div className="
             absolute -top-6 -left-6
             text-[8rem]
@@ -264,14 +300,18 @@ const VideoCarousel = ({ title, videos }: VideoCarouselProps) => {
             </div>
 
           </motion.div>
+
         ))}
+
       </motion.div>
+
     </div>
     </div>
   );
 };
 
 const VideoProduction = () => {
+  
   return (
     <div className="pt-20">
       {/* Top Videos Section */}
